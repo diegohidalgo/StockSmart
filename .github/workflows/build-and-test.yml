@@ -1,0 +1,50 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: dotnet build and test
+
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: [ "master" ]
+    types: [opened, reopened]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+      
+    - name: Setup .NET 6.0.x
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Setup .NET 3.1.x
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 3.1.x
+
+    - name: Display .NET version
+      run: dotnet --version
+
+    - name: Restore dependencies
+      run: dotnet restore ./src/StockSmart.sln
+
+    - name: Build
+      run: dotnet build ./src/StockSmart.sln --no-restore
+
+    - name: Test with .NET
+      run: dotnet test ./src/StockSmart.sln --logger trx --results-directory "TestResults-${{ matrix.dotnet-version }}"
+
+    - name: Upload .NET test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: dotnet-results-${{ matrix.dotnet-version }}
+        path: TestResults-${{ matrix.dotnet-version }}
+      # Use always() to always run this step to publish test results when there are test failures
+      if: ${{ always() }}

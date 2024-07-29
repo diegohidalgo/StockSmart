@@ -1,0 +1,52 @@
+version: '3.4'
+
+services:
+  stocksmart.webapp:
+    image: ${DOCKER_REGISTRY-}stocksmartwebapp
+    container_name: stocksmart.webapp
+    build:
+      context: .
+      dockerfile: StockSmart.WebApp/Dockerfile
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    networks:
+      - stockspartapp
+    depends_on:
+      - stocksmart.database
+      - stocksmart.cache
+
+  stocksmart.database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: stocksmart.database
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=StockSmart!2024
+    ports:
+      - "5033:1433"
+    networks:
+      - stockspartapp
+
+  stocksmart.cache:
+    image: redis:latest
+    restart: always
+    container_name: stocksmart.cache
+    ports:
+      - "6379:6379"
+    networks:
+      - stockspartapp
+
+  stocksmart.migrations:
+    container_name: stocksmart.migrations
+    build:
+      context: .
+      dockerfile: StockSmart.WebApp/Dockerfile.migrations
+    networks:
+      - stockspartapp
+    depends_on:
+      - stocksmart.database
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+networks:
+  stockspartapp:
