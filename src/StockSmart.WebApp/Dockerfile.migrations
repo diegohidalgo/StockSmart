@@ -1,0 +1,11 @@
+# Use the official .NET SDK image
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+COPY --from=mcr.microsoft.com/dotnet/core/aspnet:3.1 /usr/share/dotnet /usr/share/dotnet
+WORKDIR /src
+COPY ["StockSmart.WebApp/StockSmart.WebApp.csproj", "StockSmart.WebApp/"]
+RUN dotnet restore "./StockSmart.WebApp/StockSmart.WebApp.csproj"
+COPY . .
+WORKDIR "/src/StockSmart.WebApp"
+RUN dotnet tool install --global dotnet-ef --version 6.0.0
+ENV PATH="${PATH}:/root/.dotnet/tools"
+ENTRYPOINT ["dotnet", "ef", "database", "update", "--project", "../StockSmart.Infrastructure"]
