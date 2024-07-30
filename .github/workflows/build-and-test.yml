@@ -17,17 +17,17 @@ jobs:
 
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       
-    - name: Setup .NET 6.0.x
-      uses: actions/setup-dotnet@v3
+    - name: Setup .NET 8.0.x
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 8.0.x
 
-    - name: Setup .NET 3.1.x
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 3.1.x
+    # - name: Setup .NET 3.1.x
+    #   uses: actions/setup-dotnet@v3
+    #   with:
+    #     dotnet-version: 3.1.x
 
     - name: Display .NET version
       run: dotnet --version
@@ -39,12 +39,12 @@ jobs:
       run: dotnet build ./src/StockSmart.sln --no-restore
 
     - name: Test with .NET
-      run: dotnet test ./src/StockSmart.sln --logger trx --results-directory "TestResults-${{ matrix.dotnet-version }}"
+      run: dotnet test ./src/StockSmart.sln --logger trx --results-directory "TestResults-8.0.x"
 
     - name: Upload .NET test results
       uses: actions/upload-artifact@v4
       with:
-        name: dotnet-results-${{ matrix.dotnet-version }}
-        path: TestResults-${{ matrix.dotnet-version }}
+        name: dotnet-results-8.0.x
+        path: TestResults-8.0.x
       # Use always() to always run this step to publish test results when there are test failures
       if: ${{ always() }}

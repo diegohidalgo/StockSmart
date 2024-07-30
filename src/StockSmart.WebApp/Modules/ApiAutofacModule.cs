@@ -6,26 +6,25 @@ using StockSmart.Infrastructure.Repositories;
 using StockSmart.Infrastructure.Services;
 using Module = Autofac.Module;
 
-namespace StockSmart.WebApp.Modules
+namespace StockSmart.WebApp.Modules;
+
+public class ApiAutofacModule : Module
 {
-    public class ApiAutofacModule : Module
+    protected override void Load(ContainerBuilder builder)
     {
-        protected override void Load(ContainerBuilder builder)
-        {
-            builder.RegisterAssemblyTypes(typeof(Application.AssemblyReference).Assembly)
-                .Where(t => typeof(IMapper).IsAssignableFrom(t))
-                .AsImplementedInterfaces()
-                .InstancePerLifetimeScope();
+        builder.RegisterAssemblyTypes(typeof(Application.AssemblyReference).Assembly)
+            .Where(t => typeof(IMapper).IsAssignableFrom(t))
+            .AsImplementedInterfaces()
+            .InstancePerLifetimeScope();
 
-            builder.RegisterAssemblyTypes(typeof(Domain.AssemblyReference).Assembly, typeof(Infrastructure.AssemblyReference).Assembly)
-                .AsClosedTypesOf(typeof(IRepository<>))
-                .InstancePerLifetimeScope();
+        builder.RegisterAssemblyTypes(typeof(Domain.AssemblyReference).Assembly, typeof(Infrastructure.AssemblyReference).Assembly)
+            .AsClosedTypesOf(typeof(IRepository<>))
+            .InstancePerLifetimeScope();
 
-            builder.RegisterDecorator<CachedStatusRepository, IStatusRepository>();
+        builder.RegisterDecorator<CachedStatusRepository, IStatusRepository>();
 
-            builder.RegisterType<DiscountService>()
-                .As<IDiscountService>()
-                .InstancePerDependency();
-        }
+        builder.RegisterType<DiscountService>()
+            .As<IDiscountService>()
+            .InstancePerDependency();
     }
 }
