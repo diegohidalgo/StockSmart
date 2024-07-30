@@ -10,68 +10,57 @@ using StockSmart.Application.Services;
 using StockSmart.Domain.Common.Abstract;
 using StockSmart.Domain.Exceptions;
 
-namespace StockSmart.Application.Products.Command.CreateProduct
+namespace StockSmart.Application.Products.Command.CreateProduct;
+
+public class CreateProductCommandHandler(
+    IProductRepository productRepository,
+    IProductMapper productMapper,
+    IUnitOfWork unitOfWork,
+    IDiscountService discountService,
+    IStatusRepository statusRepository,
+    ILoggerFactory loggerFactory) : ICommandHandler<CreateProductCommand, IEnumerable<ProductResponse>>
 {
-    public class CreateProductCommandHandler : ICommandHandler<CreateProductCommand, IEnumerable<ProductResponse>>
+    private readonly IProductRepository _productRepository = productRepository;
+    private readonly IStatusRepository _statusRepository = statusRepository;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IProductMapper _productMapper = productMapper;
+    private readonly IDiscountService _discountService = discountService;
+    private readonly ILogger _logger = loggerFactory.CreateLogger<CreateProductCommandHandler>();
+
+    public async Task<IEnumerable<ProductResponse>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
     {
-        private readonly IProductRepository _productRepository;
-        private readonly IStatusRepository _statusRepository;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IProductMapper _productMapper;
-        private readonly IDiscountService _discountService;
-        private readonly ILogger _logger;
+        _logger.LogInformation($"Handling {nameof(CreateProductCommandHandler)}");
+        var productsToSave = await _productMapper.MapList(request.Products);
 
-        public CreateProductCommandHandler(
-            IProductRepository productRepository,
-            IProductMapper productMapper,
-            IUnitOfWork unitOfWork,
-            IDiscountService discountService,
-            IStatusRepository statusRepository,
-            ILoggerFactory loggerFactory)
+        var statuses = await _statusRepository.GetAllAsync();
+        _logger.LogInformation($"Status found {statuses.Count()}");
+
+        var statusDictionary = statuses.Distinct().ToDictionary(x => x.Name);
+
+        var productDiscounts = await _discountService.GetDiscountByProducts(productsToSave.Select(x => x.ProductCode).ToList());
+
+        var productDiscountsDictionary = productDiscounts.Distinct().ToDictionary(x => x.ProductCode);
+
+        foreach (var product in productsToSave)
         {
-            _productRepository = productRepository;
-            _productMapper = productMapper;
-            _unitOfWork = unitOfWork;
-            _discountService = discountService;
-            _statusRepository = statusRepository;
-            _logger = loggerFactory.CreateLogger<CreateProductCommandHandler>();
-        }
-
-        public async Task<IEnumerable<ProductResponse>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
-        {
-            _logger.LogInformation($"Handling {nameof(CreateProductCommandHandler)}");
-            var productsToSave = await _productMapper.MapList(request.Products);
-
-            var statuses = await _statusRepository.GetAllAsync();
-            _logger.LogInformation($"Status found {statuses.Count()}");
-
-            var statusDictionary = statuses.Distinct().ToDictionary(x => x.Name);
-
-            var productDiscounts = await _discountService.GetDiscountByProducts(productsToSave.Select(x => x.ProductCode).ToList());
-
-            var productDiscountsDictionary = productDiscounts.Distinct().ToDictionary(x => x.ProductCode);
-
-            foreach (var product in productsToSave)
+            if (!statusDictionary.TryGetValue(product.Status.Name, out var productStatus))
             {
-                if (!statusDictionary.TryGetValue(product.Status.Name, out var productStatus))
-                {
-                    throw new ProductStatusInvalidException("Product status not found", product.Status.Name);
-                }
-                product.UpdateStatus(productStatus.StatusId);
-
-                if (productDiscountsDictionary.TryGetValue(product.ProductCode, out var productDiscount))
-                {
-                    product.SetDiscount(productDiscount.Value);
-                }
+                throw new ProductStatusInvalidException("Product status not found", product.Status.Name);
             }
+            product.UpdateStatus(productStatus.StatusId);
 
-            await _productRepository.AddRange(productsToSave);
-
-            _logger.LogInformation($"Creating products {productsToSave.Count()}");
-
-            await _unitOfWork.Complete();
-
-            return await _productMapper.ReverseMapList(productsToSave);
+            if (productDiscountsDictionary.TryGetValue(product.ProductCode, out var productDiscount))
+            {
+                product.SetDiscount(productDiscount.Value);
+            }
         }
+
+        await _productRepository.AddRange(productsToSave);
+
+        _logger.LogInformation($"Creating products {productsToSave.Count()}");
+
+        await _unitOfWork.Complete();
+
+        return await _productMapper.ReverseMapList(productsToSave);
     }
 }

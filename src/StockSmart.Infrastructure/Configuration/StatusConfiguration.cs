@@ -3,33 +3,32 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using StockSmart.Domain.Entities;
 
-namespace StockSmart.Infrastructure.Configuration
+namespace StockSmart.Infrastructure.Configuration;
+
+public class StatusConfiguration : IEntityTypeConfiguration<Status>
 {
-    public class StatusConfiguration : IEntityTypeConfiguration<Status>
+    public void Configure(EntityTypeBuilder<Status> builder)
     {
-        public void Configure(EntityTypeBuilder<Status> builder)
-        {
-            if (builder is null)
-                throw new ArgumentNullException(nameof(builder));
+        if (builder is null)
+            throw new ArgumentNullException(nameof(builder));
 
-            builder.ToTable("Status");
+        builder.ToTable("Status");
 
-            builder.HasKey(x => x.StatusId);
+        builder.HasKey(x => x.StatusId);
 
 
-            builder
-                .Property(p => p.StatusId)
-                .ValueGeneratedNever()
-                .IsRequired();
+        builder
+            .Property(p => p.StatusId)
+            .ValueGeneratedNever()
+            .IsRequired();
 
-            builder
-                .Property(p => p.Name)
-                .HasMaxLength(500)
-                .IsRequired();
+        builder
+            .Property(p => p.Name)
+            .HasMaxLength(500)
+            .IsRequired();
 
-            builder
-                .HasIndex(i => new { i.Name })
-                .IsUnique();
-        }
+        builder
+            .HasIndex(i => new { i.Name })
+            .IsUnique();
     }
 }

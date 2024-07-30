@@ -1,10 +1,9 @@
 using System;
 using System.Threading.Tasks;
 
-namespace StockSmart.Domain.Common.Abstract
+namespace StockSmart.Domain.Common.Abstract;
+
+public interface IUnitOfWork : IDisposable
 {
-    public interface IUnitOfWork : IDisposable
-    {
-        Task<int> Complete();
-    }
+    Task<int> Complete();
 }

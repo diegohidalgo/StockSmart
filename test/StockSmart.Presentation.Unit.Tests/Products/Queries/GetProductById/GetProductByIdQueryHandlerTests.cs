@@ -1,7 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using StockSmart.Application.Products.Command.UpdateProduct;
 using StockSmart.Application.Products.Mappers;
 using StockSmart.Application.Products.Mappers.Abstract;
 using StockSmart.Application.Products.Queries.GetProductById;
@@ -17,15 +19,25 @@ namespace StockSmart.Application.Unit.Tests.Products.Queries.GetProductById
         private Mock<IProductRepository> _mockProductRepository;
         private IProductMapper _productMapper;
         private GetProductByIdQueryHandler _handler;
+        private Mock<ILogger<UpdateProductCommandHandler>> _mockLogger;
+        private Mock<ILoggerFactory> _mockLoggerFactory;
 
         [SetUp]
         public void Setup()
         {
             _mockProductRepository = new Mock<IProductRepository>();
             _productMapper = new ProductMapper();
+            _mockLogger = new Mock<ILogger<UpdateProductCommandHandler>>();
+            _mockLoggerFactory = new Mock<ILoggerFactory>();
+
+            _mockLoggerFactory
+                .Setup(x => x.CreateLogger(It.IsAny<string>()))
+                .Returns(() => _mockLogger.Object);
+
             _handler = new GetProductByIdQueryHandler(
                 _mockProductRepository.Object,
-                _productMapper);
+                _productMapper,
+                _mockLoggerFactory.Object);
         }
 
         [Test]
