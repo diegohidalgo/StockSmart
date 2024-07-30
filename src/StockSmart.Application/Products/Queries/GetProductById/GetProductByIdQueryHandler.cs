@@ -7,12 +7,12 @@ using StockSmart.Domain.Exceptions;
 
 namespace StockSmart.Application.Products.Queries.GetProductById
 {
-    public class GetProductQueryHandler : IRequestHandler<GetProductByIdQuery, ProductResponse>
+    public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, ProductResponse>
     {
         private readonly IProductRepository _productRepository;
         private readonly IProductMapper _productMapper;
 
-        public GetProductQueryHandler(IProductRepository productRepository, IProductMapper productMapper)
+        public GetProductByIdQueryHandler(IProductRepository productRepository, IProductMapper productMapper)
         {
             _productRepository = productRepository;
             _productMapper = productMapper;
