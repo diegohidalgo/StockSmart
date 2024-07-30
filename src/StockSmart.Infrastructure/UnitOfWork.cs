@@ -1,26 +1,19 @@
 using System.Threading.Tasks;
 using StockSmart.Domain.Common.Abstract;
-using StockSmart.Infrastructure.Repositories;
 
-namespace StockSmart.Infrastructure
+namespace StockSmart.Infrastructure;
+
+public class UnitOfWork(AppDbContext dbContext) : IUnitOfWork
 {
-    public class UnitOfWork : IUnitOfWork
+    private readonly AppDbContext _dbContext = dbContext;
+
+    async Task<int> IUnitOfWork.Complete()
     {
-        private readonly AppDbContext _dbContext;
+        return await _dbContext.SaveChangesAsync();
+    }
 
-        public UnitOfWork(AppDbContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
-
-        async Task<int> IUnitOfWork.Complete()
-        {
-            return await _dbContext.SaveChangesAsync();
-        }
-
-        public void Dispose()
-        {
-            _dbContext.Dispose();
-        }
+    public void Dispose()
+    {
+        _dbContext.Dispose();
     }
 }

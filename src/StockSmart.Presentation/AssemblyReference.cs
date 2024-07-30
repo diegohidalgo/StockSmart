@@ -1,6 +1,5 @@
-namespace StockSmart.Presentation
+namespace StockSmart.Presentation;
+
+public static class AssemblyReference
 {
-    public static class AssemblyReference
-    {
-    }
 }

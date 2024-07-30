@@ -5,26 +5,25 @@ using StockSmart.Domain.Common.Abstract;
 using StockSmart.Infrastructure;
 using Module = Autofac.Module;
 
-namespace StockSmart.WebApp.Modules
+namespace StockSmart.WebApp.Modules;
+
+public class EntityFrameworkAutofacModule(IConfiguration configuration) : Module
 {
-    public class EntityFrameworkAutofacModule : Module
+    private readonly IConfiguration _configuration = configuration;
+
+    protected override void Load(ContainerBuilder builder)
     {
-        private readonly IConfiguration _configuration;
-        public EntityFrameworkAutofacModule(IConfiguration configuration) => _configuration = configuration;
-        protected override void Load(ContainerBuilder builder)
+        builder.Register(x =>
         {
-            builder.Register(x =>
-            {
-                var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-                optionsBuilder
-                    .UseSqlServer(_configuration.GetConnectionString("Database"));
-                return new AppDbContext(optionsBuilder.Options);
-            }).InstancePerLifetimeScope();
+            var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+            optionsBuilder
+                .UseSqlServer(_configuration.GetConnectionString("Database"));
+            return new AppDbContext(optionsBuilder.Options);
+        }).InstancePerLifetimeScope();
 
-            builder.RegisterType<UnitOfWork>()
-                .As<IUnitOfWork>()
-                .InstancePerDependency();
+        builder.RegisterType<UnitOfWork>()
+            .As<IUnitOfWork>()
+            .InstancePerDependency();
 
-        }
     }
 }

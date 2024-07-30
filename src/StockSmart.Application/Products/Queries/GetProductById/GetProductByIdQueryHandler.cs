@@ -1,31 +1,29 @@
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
+using Microsoft.Extensions.Logging;
+using StockSmart.Application.Common.Abstract;
 using StockSmart.Application.Products.Mappers.Abstract;
 using StockSmart.Domain.Common.Abstract;
 using StockSmart.Domain.Exceptions;
 
-namespace StockSmart.Application.Products.Queries.GetProductById
+namespace StockSmart.Application.Products.Queries.GetProductById;
+
+public class GetProductByIdQueryHandler(IProductRepository productRepository, IProductMapper productMapper, ILoggerFactory loggerFactory)
+    : IQueryHandler<GetProductByIdQuery, ProductResponse>
 {
-    public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, ProductResponse>
+    private readonly IProductRepository _productRepository = productRepository;
+    private readonly IProductMapper _productMapper = productMapper;
+    private readonly ILogger _logger = loggerFactory.CreateLogger<GetProductByIdQueryHandler>();
+
+    public async Task<ProductResponse> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
     {
-        private readonly IProductRepository _productRepository;
-        private readonly IProductMapper _productMapper;
+        _logger.LogInformation($"Handling {nameof(GetProductByIdQueryHandler)} ProductId {request.ProductId}");
 
-        public GetProductByIdQueryHandler(IProductRepository productRepository, IProductMapper productMapper)
+        var productEntity = await _productRepository.GetById(request.ProductId);
+        if (productEntity == null)
         {
-            _productRepository = productRepository;
-            _productMapper = productMapper;
+            throw new ProductNotFoundException("Product not found", request.ProductId);
         }
-
-        public async Task<ProductResponse> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
-        {
-            var productEntity = await _productRepository.GetById(request.ProductId);
-            if (productEntity == null)
-            {
-                throw new ProductNotFoundException("Product not found", request.ProductId);
-            }
-            return await _productMapper.ReverseMap(productEntity);
-        }
+        return await _productMapper.ReverseMap(productEntity);
     }
 }

@@ -1,14 +1,11 @@
-using MediatR;
+using System.ComponentModel.DataAnnotations;
+using StockSmart.Application.Common.Abstract;
 
-namespace StockSmart.Application.Products.Queries.GetProductById
+namespace StockSmart.Application.Products.Queries.GetProductById;
+
+public class GetProductByIdQuery(int productId) : IQuery<ProductResponse>
 {
-    public class GetProductByIdQuery : IRequest<ProductResponse>
-    {
-        public GetProductByIdQuery(int productId)
-        {
-            ProductId = productId;
-        }
-
-        public int ProductId { get; private set; }
-    }
+    [Required]
+    [Range(1, int.MaxValue)]
+    public int ProductId { get; private set; } = productId;
 }

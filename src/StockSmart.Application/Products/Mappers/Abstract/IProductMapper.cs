@@ -5,12 +5,11 @@ using StockSmart.Application.Products.Command.CreateProduct;
 using StockSmart.Application.Products.Queries.GetProductById;
 using StockSmart.Domain.Entities;
 
-namespace StockSmart.Application.Products.Mappers.Abstract
+namespace StockSmart.Application.Products.Mappers.Abstract;
+
+public interface IProductMapper : IMapper
 {
-    public interface IProductMapper : IMapper
-    {
-        Task<ProductResponse> ReverseMap(Product product);
-        Task<IEnumerable<ProductResponse>> ReverseMapList(IEnumerable<Product> products);
-        Task<IEnumerable<Product>> MapList(IEnumerable<CreateProductRequest> productRequests);
-    }
+    Task<ProductResponse> ReverseMap(Product product);
+    Task<IEnumerable<ProductResponse>> ReverseMapList(IEnumerable<Product> products);
+    Task<IEnumerable<Product>> MapList(IEnumerable<CreateProductRequest> productRequests);
 }

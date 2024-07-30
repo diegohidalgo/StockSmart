@@ -1,12 +1,12 @@
 #See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
-COPY --from=mcr.microsoft.com/dotnet/core/aspnet:3.1 /usr/share/dotnet /usr/share/dotnet
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+#COPY --from=mcr.microsoft.com/dotnet/core/aspnet:3.1 /usr/share/dotnet /usr/share/dotnet
 WORKDIR /app
 EXPOSE 5000
 EXPOSE 5001
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["StockSmart.WebApp/StockSmart.WebApp.csproj", "StockSmart.WebApp/"]

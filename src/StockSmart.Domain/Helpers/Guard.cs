@@ -1,15 +1,14 @@
 using StockSmart.Domain.Exceptions;
 
-namespace StockSmart.Domain.Helpers
+namespace StockSmart.Domain.Helpers;
+
+public class Guard
 {
-    public class Guard
+    public static void IsInvalidId(int? id)
     {
-        public static void IsInvalidId(int? id)
+        if (id is null or < 1)
         {
-            if (id is null || id < 1)
-            {
-                throw new ProductBadRequestException("Error sending id parameter", id);
-            }
+            throw new ProductBadRequestException("Error sending id parameter", id);
         }
     }
 }

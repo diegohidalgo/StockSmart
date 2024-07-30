@@ -1,11 +1,5 @@
-using System.Net;
+namespace StockSmart.Domain.Exceptions;
 
-namespace StockSmart.Domain.Exceptions
+public class SettingsNotFoundException(string message, object value) : StockSmartException(message, value)
 {
-    public class SettingsNotFoundException : StockSmartException
-    {
-        public SettingsNotFoundException(string message, object value) : base(message, value)
-        {
-        }
-    }
 }

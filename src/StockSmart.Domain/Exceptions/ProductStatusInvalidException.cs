@@ -1,12 +1,11 @@
 using System.Net;
 
-namespace StockSmart.Domain.Exceptions
+namespace StockSmart.Domain.Exceptions;
+
+public class ProductStatusInvalidException : StockSmartException
 {
-    public class ProductStatusInvalidException : StockSmartException
+    public ProductStatusInvalidException(string message, object value) : base(message, value)
     {
-        public ProductStatusInvalidException(string message, object value) : base(message, value)
-        {
-            StatusCode = (int)HttpStatusCode.BadRequest;
-        }
+        StatusCode = (int)HttpStatusCode.BadRequest;
     }
 }

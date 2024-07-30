@@ -1,6 +1,5 @@
-namespace StockSmart.Infrastructure
+namespace StockSmart.Infrastructure;
+
+public static class AssemblyReference
 {
-    public static class AssemblyReference
-    {
-    }
 }

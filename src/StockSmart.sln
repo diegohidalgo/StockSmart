@@ -26,7 +26,7 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockSmart.Architecture.Tests", "..\test\StockSmart.Architecture.Tests\StockSmart.Architecture.Tests.csproj", "{D514305A-906D-4BB1-A973-CC85206D3408}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockSmart.Application.Unit.Tests", "..\test\StockSmart.Presentation.Unit.Tests\StockSmart.Application.Unit.Tests.csproj", "{60D5BBBB-2951-4643-BA32-83300994CF6E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockSmart.Application.Unit.Tests", "..\test\StockSmart.Presentation.Unit.Tests\StockSmart.Application.Unit.Tests.csproj", "{60D5BBBB-2951-4643-BA32-83300994CF6E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
